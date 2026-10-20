@@ -1,0 +1,990 @@
+% Тригонометрические уравнения, системы и неравенства: задачи 2.1–2.244.
+% Самодостаточный файл. Сборка: xelatex trigonometry1-244.tex (дважды).
+% Исходник главы: https://github.com/mrKuznetsov698/mipt-book
+% !TeX program = xelatex
+% Формат Fi_tex: альбомный A4, две колонки, Unicode-шрифты и русский язык.
+\documentclass[10pt,a4paper,landscape]{article}
+% Layout and shared commands adapted from sstellariaa/Fi_tex/preamble.tex.
+% Keep Unicode fonts and language configuration together for XeLaTeX.
+\usepackage{amsmath,amsthm}
+\usepackage[regular]{newcomputermodern}
+\usepackage{polyglossia}
+\setmainlanguage{russian}
+\setotherlanguage{english}
+
+\usepackage[landscape,left=1cm,right=1cm,top=1.5cm,bottom=1.5cm]{geometry}
+\usepackage{enumitem}
+\usepackage{parskip}
+\usepackage{multicol}
+\setlength{\columnsep}{2cm}
+\setlength{\columnseprule}{0.4pt}
+
+\newcommand{\fr}{\frac}
+\newcommand{\pd}{\partial}
+\newcommand{\limm}{\lim\limits}
+\newcommand{\vect}{\overline}
+\newenvironment{Proof}
+  {$\scriptstyle\mdlgwhtsquare$}
+  {$\scriptstyle\mdlgblksquare$}
+\newtheorem{Ex}{Пример}
+\newtheorem{Th}{Теорема}
+\newtheorem{Def}{Определение}
+\newtheorem{Ax}{Аксиома}
+
+\newif\ifTrigSourcePages
+\TrigSourcePagesfalse
+\RequirePackage{amsmath}
+\RequirePackage{enumitem}
+\RequirePackage{xparse}
+\RequirePackage{fancyhdr}
+% Стандартные прямые операторы, как в образце Преобразования.pdf.
+\newcommand{\trigsin}{\sin}
+\newcommand{\trigcos}{\cos}
+\newcommand{\trigtg}{\mathop{\mathrm{tg}}\nolimits}
+\newcommand{\trigctg}{\mathop{\mathrm{ctg}}\nolimits}
+\newcommand{\trigarcsin}{\arcsin}
+\newcommand{\trigarccos}{\arccos}
+\newcommand{\trigarctg}{\mathop{\mathrm{arctg}}\nolimits}
+\newcommand{\trigarcctg}{\mathop{\mathrm{arcctg}}\nolimits}
+\newcommand{\TrigNumberPrefix}{2}
+\newcounter{trigexercise}
+\renewcommand{\thetrigexercise}{\TrigNumberPrefix.\arabic{trigexercise}}
+\providecommand{\theHtrigexercise}{trig.\arabic{trigexercise}}
+\newcommand{\TrigRunningTitle}{ТРИГОНОМЕТРИЧЕСКИЕ УРАВНЕНИЯ, СИСТЕМЫ И НЕРАВЕНСТВА\enspace\textbullet\enspace ЗАДАЧИ}
+\fancypagestyle{trigbook}{%
+ \fancyhf{}%
+ \fancyfoot[C]{\fontsize{8}{9}\selectfont\thepage}%
+ \renewcommand{\headrulewidth}{0pt}%
+ \renewcommand{\footrulewidth}{0pt}%
+}
+\newcommand{\TrigChapter}[1]{%
+ \ifcsname c@chapter\endcsname
+  \refstepcounter{chapter}%
+  \def\TrigChapterNumber{\thechapter}%
+  \addcontentsline{toc}{chapter}{\protect\numberline{\thechapter}#1}%
+ \else
+  \refstepcounter{section}%
+  \def\TrigChapterNumber{\thesection}%
+  \addcontentsline{toc}{section}{\protect\numberline{\thesection}#1}%
+ \fi
+ \thispagestyle{trigbook}%
+ {\centering\bfseries\fontsize{10.5}{11.5}\selectfont
+ \TrigChapterNumber.\enspace\MakeUppercase{#1}\par}%
+ \vskip8pt
+}
+\newsavebox{\TrigFormulaBox}
+\newsavebox{\TrigTicketBox}
+\newsavebox{\TrigNumberBox}
+\newcommand{\TrigTicket}{\mbox{%
+ \ifTrigSourcePages\fontsize{8.5}{9.5}\else\fontsize{9}{10}\fi
+ \selectfont(Билет \TrigCurrentTicket, \TrigCurrentYear)}}
+\newcommand{\TrigMathNoTicket}[1]{%
+ \par\nobreak\vskip1pt
+ \noindent\makebox[\linewidth][c]{$\displaystyle #1$}\par
+ \nobreak\vskip1pt
+}
+\newcommand{\TrigMath}[1]{%
+ \par\nobreak\vskip1pt
+ \sbox{\TrigFormulaBox}{$\displaystyle #1$}%
+ \sbox{\TrigTicketBox}{\TrigTicket}%
+ \ifdim\dimexpr\wd\TrigFormulaBox+2\wd\TrigTicketBox+8pt\relax>\linewidth
+  \noindent\makebox[\linewidth][c]{\usebox{\TrigFormulaBox}}\par\nobreak
+  \vskip1pt\noindent\hfill\TrigTicket\par
+ \else
+  \noindent\makebox[\linewidth][c]{\usebox{\TrigFormulaBox}}%
+  \makebox[0pt][r]{\TrigTicket}\par
+ \fi
+}
+\NewDocumentEnvironment{TrigExercise}{m m m m +b}{%
+ \par
+ \ifTrigSourcePages\else\vbox\bgroup\fi
+ \def\TrigCurrentTicket{#3}\def\TrigCurrentYear{#4}%
+ \setcounter{trigexercise}{\numexpr#1-1\relax}%
+ \refstepcounter{trigexercise}\label{trig:#1}%
+ \sbox{\TrigNumberBox}{\hspace*{3.5mm}\textbf{\thetrigexercise.}\enspace}%
+ \hangindent=\wd\TrigNumberBox\hangafter=1
+ \noindent\usebox{\TrigNumberBox}#2\par\nobreak
+ #5\par
+ \ifTrigSourcePages
+  \vskip1.5pt plus1fill
+ \else
+  \egroup\vskip5pt plus1pt minus1pt
+ \fi
+}{}
+% Жёсткие границы исходных страниц; геометрию задаёт главный документ.
+\NewDocumentEnvironment{TrigSourcePage}{m +b}{%
+ \ifTrigSourcePages
+  \clearpage\begingroup\pagestyle{trigbook}%
+  \setlength{\parindent}{0pt}\setlength{\parskip}{0pt}%
+  \fontsize{10}{11.5}\selectfont
+  \vbox to\textheight{#2\unskip\vskip0pt}%
+  \clearpage\endgroup
+ \else
+  \begingroup
+  \setlength{\parindent}{0pt}\setlength{\parskip}{0pt}%
+  #2\par
+  \endgroup
+ \fi
+}{}
+\newenvironment{TrigParts}{%
+ \begin{enumerate}[label=\arabic*),leftmargin=1em,labelwidth=.8em,labelsep=.2em,itemindent=0pt,listparindent=0pt,align=left,nosep,topsep=0pt]%
+}{\end{enumerate}}
+
+\usepackage[unicode,hidelinks]{hyperref}
+\pdfstringdefDisableCommands{\def\\{ }}
+\begin{document}
+\pagestyle{trigbook}
+\fontsize{10}{12}\selectfont
+\setcounter{section}{1}
+\begin{multicols}{2}
+% UTF-8. Подключение: \input{trigonometry.tex}; оформление: trig-chapter.sty.
+% Задачи распределены по исходным страницам 29--47.
+
+% Страница 29; 20261013_122150.jpg
+\begin{TrigSourcePage}{29}
+\TrigChapter{Тригонометрические уравнения,\\ системы и неравенства}
+\label{chap:trigonometry}
+\begin{TrigExercise}{1}{Решить уравнение}{1}{1991}
+\TrigMath{\sqrt{8\trigsin x+\frac{13}{3}}=2\trigcos x+2\trigtg x.}
+\end{TrigExercise}
+\begin{TrigExercise}{2}{Решить уравнение}{2}{1991}
+\TrigMath{\sqrt{5\trigtg x+10}=\frac52\trigsin x+\frac1{\trigcos x}.}
+\end{TrigExercise}
+\begin{TrigExercise}{3}{Решить уравнение}{3}{1991}
+\TrigMath{\sqrt{7-4\sqrt2\trigsin x}=2\trigcos x-\sqrt2\trigtg x.}
+\end{TrigExercise}
+\begin{TrigExercise}{4}{Решить уравнение}{4}{1991}
+\TrigMath{\sqrt{12-6\sqrt2\trigtg x}=3\trigsin x-\frac{\sqrt2}{\trigcos x}.}
+\end{TrigExercise}
+\begin{TrigExercise}{5}{Решить уравнение}{5}{1992}
+\TrigMath{\trigarctg 3x=\trigarccos 8x.}
+\end{TrigExercise}
+\begin{TrigExercise}{6}{Решить уравнение}{6}{1992}
+\TrigMath{2\trigarcsin 2x=\trigarccos 7x.}
+\end{TrigExercise}
+\begin{TrigExercise}{7}{Решить уравнение}{7}{1992}
+\TrigMath{\trigarcsin 5x=\trigarcctg 6x.}
+\end{TrigExercise}
+\begin{TrigExercise}{8}{Решить уравнение}{8}{1992}
+\TrigMath{2\trigarccos x=\trigarccos\frac73x.}
+\end{TrigExercise}
+\begin{TrigExercise}{9}{Решить систему уравнений}{9}{1992}
+\TrigMath{\begin{cases}10\trigcos 2x-2=7\trigcos x\trigcos 2y,\\\trigsin x=\sqrt{\trigcos x}\trigsin y.\end{cases}}
+\end{TrigExercise}
+\begin{TrigExercise}{10}{Решить систему уравнений}{10}{1992}
+\TrigMath{\begin{cases}\sqrt{2\trigtg x-4\trigctg x}=3\trigtg y,\\\sqrt{2\trigsin 2x}=\frac43\trigsin x\trigcos y.\end{cases}}
+\end{TrigExercise}
+\begin{TrigExercise}{11}{Решить систему уравнений}{11}{1992}
+\TrigMath{\begin{cases}17\trigcos 2x-7=21\trigsin x\trigcos 2y,\\\trigcos x=\sqrt3\trigsin x\trigcos y.\end{cases}}
+\end{TrigExercise}
+\begin{TrigExercise}{12}{Решить систему уравнений}{12}{1992}
+\TrigMath{\begin{cases}\sqrt{\trigctg x-3\trigtg x}=4\trigctg y,\\\sqrt{\frac43\trigsin 2x}=\trigcos x\trigsin y.\end{cases}}
+\end{TrigExercise}
+\end{TrigSourcePage}
+
+% Страница 30; 20261013_122200.jpg
+\begin{TrigSourcePage}{30}
+\begin{TrigExercise}{13}{Решить уравнение}{1}{1993}
+\TrigMath{\trigsin 3x+|\trigsin x|=\trigsin 2x.}
+\end{TrigExercise}
+\begin{TrigExercise}{14}{Решить уравнение}{2}{1993}
+\TrigMath{\trigcos 3x+|\trigcos x|=\trigsin 2x.}
+\end{TrigExercise}
+\begin{TrigExercise}{15}{Решить уравнение}{3}{1993}
+\TrigMath{\trigsin 3x-|\trigsin x|=\trigsin 2x.}
+\end{TrigExercise}
+\begin{TrigExercise}{16}{Решить уравнение}{4}{1993}
+\TrigMath{|\trigcos x|-\trigcos 3x=\trigsin 2x.}
+\end{TrigExercise}
+\begin{TrigExercise}{17}{Найти все решения уравнения}{5}{1993}
+\TrigMath{\frac{\trigsin 6x}{\trigsin x+\trigcos x}=\frac{\trigcos 6x}{\trigcos x-\trigsin x},}
+принадлежащие интервалу $(0;\pi/2)$.
+\end{TrigExercise}
+\begin{TrigExercise}{18}{Найти все решения уравнения}{6}{1993}
+\TrigMath{\frac{\sqrt3\trigcos x-\trigsin x}{\trigcos 6x}=\frac{\sqrt3\trigsin x+\trigcos x}{\trigsin 6x},}
+принадлежащие интервалу $(-\pi/2;0)$.
+\end{TrigExercise}
+\begin{TrigExercise}{19}{Найти все решения уравнения}{7}{1993}
+\TrigMath{\frac{\trigsin 6x}{\trigsin x-\trigcos x}=\frac{\trigcos 6x}{\trigcos x+\trigsin x},}
+принадлежащие интервалу $(-\pi/2;0)$.
+\end{TrigExercise}
+\begin{TrigExercise}{20}{Найти все решения уравнения}{8}{1993}
+\TrigMath{\frac{\sqrt3\trigsin x-\trigcos x}{\trigsin 6x}=\frac{\sqrt3\trigcos x+\trigsin x}{\trigcos 6x},}
+принадлежащие интервалу $(0;\pi/2)$.
+\end{TrigExercise}
+\begin{TrigExercise}{21}{Решить уравнение}{9}{1993}
+\TrigMath{\sqrt{\frac72-3\trigsin^2 x}=\trigsin x+\trigcos x.}
+\end{TrigExercise}
+\begin{TrigExercise}{22}{Решить уравнение}{10}{1993}
+\TrigMath{\sqrt{\frac{13}{3}+\trigcos 2x}+\trigctg x=0.}
+\end{TrigExercise}
+\begin{TrigExercise}{23}{Решить уравнение}{11}{1993}
+\TrigMath{\sqrt{\frac32+\trigcos^2 x}=\trigsin x-\trigcos x.}
+\end{TrigExercise}
+\begin{TrigExercise}{24}{Решить уравнение}{12}{1993}
+\TrigMath{\sqrt{\frac53-\trigcos 2x}+\trigtg x=0.}
+\end{TrigExercise}
+\end{TrigSourcePage}
+
+% Страница 31; 20261013_122204.jpg
+\begin{TrigSourcePage}{31}
+\begin{TrigExercise}{25}{Решить уравнение}{1}{1994}
+\TrigMath{\frac{\trigcos 2x+\trigcos x}{\trigsin 2x-\trigtg x}=\trigtg 2x.}
+\end{TrigExercise}
+\begin{TrigExercise}{26}{Решить уравнение}{2}{1994}
+\TrigMath{\frac{\trigctg x-\trigtg x}{3\trigsin x+\trigcos 2x}=\trigctg 2x.}
+\end{TrigExercise}
+\begin{TrigExercise}{27}{Решить уравнение}{3}{1994}
+\TrigMath{\frac{2\trigcos x+\trigsin^2 x}{\trigctg x-\trigsin 2x}=\trigtg 2x.}
+\end{TrigExercise}
+\begin{TrigExercise}{28}{Решить уравнение}{4}{1994}
+\TrigMath{\frac{\trigctg x-\trigtg x}{\trigcos x+3\trigcos 2x}=\trigctg 2x.}
+\end{TrigExercise}
+\begin{TrigExercise}{29}{Решить уравнение}{9}{1994}
+\TrigMath{\sqrt{5-\trigcos 2x}=\trigcos x-3\trigsin x.}
+\end{TrigExercise}
+\begin{TrigExercise}{30}{Решить уравнение}{10}{1994}
+\TrigMath{\sqrt{17-7\trigsin 2x}=3\trigcos x-5\trigsin x.}
+\end{TrigExercise}
+\begin{TrigExercise}{31}{Решить уравнение}{11}{1994}
+\TrigMath{\sqrt{5+\trigcos 2x}=\trigsin x+3\trigcos x.}
+\end{TrigExercise}
+\begin{TrigExercise}{32}{Решить уравнение}{12}{1994}
+\TrigMath{\sqrt{17+7\trigsin 2x}=3\trigsin x+5\trigcos x.}
+\end{TrigExercise}
+\begin{TrigExercise}{33}{Решить уравнение}{5}{1995}
+\TrigMath{\frac{2\trigsin 3x+\trigsin 5x}{|\trigsin x|}=1.}
+\end{TrigExercise}
+\begin{TrigExercise}{34}{Решить уравнение}{6}{1995}
+\TrigMath{\frac{(\sqrt3+1)\trigsin 3x+\trigsin 5x}{|\trigsin x|}=\sqrt3.}
+\end{TrigExercise}
+\begin{TrigExercise}{35}{Решить уравнение}{7}{1995}
+\TrigMath{\frac{2\trigcos 3x-\trigcos 5x}{|\trigcos x|}=1.}
+\end{TrigExercise}
+\begin{TrigExercise}{36}{Решить уравнение}{8}{1995}
+\TrigMath{\frac{(\sqrt3+1)\trigcos 3x-\trigcos 5x}{|\trigcos x|}=\sqrt3.}
+\end{TrigExercise}
+\begin{TrigExercise}{37}{Найти наименьшее натуральное число $n$,\\при котором выполняется равенство}{9}{1995}
+\TrigMath{\trigsin(n^\circ+80^\circ)+\trigsin(n^\circ-40^\circ)+\trigsin(n^\circ+70^\circ)-\cos25^\circ=0.}
+\end{TrigExercise}
+\end{TrigSourcePage}
+
+% Страница 32; 20261013_122212.jpg
+\begin{TrigSourcePage}{32}
+\begin{TrigExercise}{38}{Найти наименьшее натуральное число $n$,\\при котором выполняется равенство}{10}{1995}
+\TrigMath{\trigcos(n^\circ+20^\circ)-\trigcos(n^\circ+80^\circ)-\trigsin(n^\circ+80^\circ)+\sin15^\circ=0.}
+\end{TrigExercise}
+\begin{TrigExercise}{39}{Найти наименьшее натуральное число $n$,\\при котором выполняется равенство}{11}{1995}
+\TrigMath{\trigsin(n^\circ+100^\circ)+\trigsin(n^\circ-20^\circ)+\trigsin(n^\circ+50^\circ)+\cos5^\circ=0.}
+\end{TrigExercise}
+\begin{TrigExercise}{40}{Найти наименьшее натуральное число $n$,\\при котором выполняется равенство}{12}{1995}
+\TrigMath{\trigcos(n^\circ-50^\circ)-\trigcos(n^\circ+10^\circ)-\trigsin(n^\circ+130^\circ)-\sin75^\circ=0.}
+\end{TrigExercise}
+\begin{TrigExercise}{41}{Решить уравнение}{1}{1996}
+\TrigMath{\sqrt{4+3\trigcos x-\trigcos 2x}=\sqrt6\trigsin x.}
+\end{TrigExercise}
+\begin{TrigExercise}{42}{Решить уравнение}{2}{1996}
+\TrigMath{\sqrt{4\trigsin x+\trigcos 2x+5}=2\sqrt2\trigcos x.}
+\end{TrigExercise}
+\begin{TrigExercise}{43}{Решить уравнение}{3}{1996}
+\TrigMath{\sqrt{7-\trigcos x-6\trigcos 2x}=4\trigsin x.}
+\end{TrigExercise}
+\begin{TrigExercise}{44}{Решить уравнение}{4}{1996}
+\TrigMath{\sqrt{5-2\trigsin x+3\trigcos 2x}=2\sqrt3\trigcos x.}
+\end{TrigExercise}
+\begin{TrigExercise}{45}{Решить систему уравнений}{5}{1996}
+\TrigMath{\begin{cases}\left|\trigcos\left(3x+\frac\pi4\right)\right|=-\sqrt2\trigcos y,\\\trigcos 2y+2\trigsin 2x+\frac34=2\trigsin^3 2x.\end{cases}}
+\end{TrigExercise}
+\begin{TrigExercise}{46}{Решить систему уравнений}{6}{1996}
+\TrigMath{\begin{cases}|\trigsin 3x|=-\sqrt2\trigsin y,\\\trigcos 2y+2\trigcos 2x\trigsin^2 2x=\frac34.\end{cases}}
+\end{TrigExercise}
+\begin{TrigExercise}{47}{Решить систему уравнений}{7}{1996}
+\TrigMath{\begin{cases}\left|\trigsin\left(3x+\frac\pi4\right)\right|=\trigsin y-\trigcos y,\\\trigsin 2y+2\trigsin 2x=\frac34+2\trigsin^3 2x.\end{cases}}
+\end{TrigExercise}
+\begin{TrigExercise}{48}{Решить систему уравнений}{8}{1996}
+\TrigMath{\begin{cases}|\trigcos 3x|=\trigsin y+\trigcos y,\\2\trigsin^2 2x\trigcos 2x+\frac34=-\trigsin 2y.\end{cases}}
+\end{TrigExercise}
+\end{TrigSourcePage}
+
+% Страница 33; 20261013_122215.jpg
+\begin{TrigSourcePage}{33}
+\begin{TrigExercise}{49}{Дана функция}{9}{1996}
+\TrigMath{f(x)=\frac{\trigsin^4 x+\trigcos^4 x}{\trigsin^6 x+\trigcos^6 x}.}
+Найти:
+\begin{TrigParts}
+\item корни уравнения $f(x)=10/7$;
+\item наибольшее и наименьшее значения функции $f(x)$.
+
+\end{TrigParts}
+\end{TrigExercise}
+\begin{TrigExercise}{50}{Дана функция}{10}{1996}
+\TrigMath{f(x)=\frac{2\trigsin^4 x+3\trigcos^2 x}{2\trigcos^4 x+\trigsin^2 x}.}
+Найти:
+\begin{TrigParts}
+\item корни уравнения $f(x)=15/7$;
+\item наибольшее и наименьшее значения функции $f(x)$.
+
+\end{TrigParts}
+\end{TrigExercise}
+\begin{TrigExercise}{51}{Дана функция}{11}{1996}
+\TrigMath{f(x)=\frac{\trigsin^6 x+\trigcos^6 x}{\trigsin^4 x+\trigcos^4 x}.}
+Найти:
+\begin{TrigParts}
+\item корни уравнения $f(x)=7/10$;
+\item наибольшее и наименьшее значения функции $f(x)$.
+
+\end{TrigParts}
+\end{TrigExercise}
+\begin{TrigExercise}{52}{Дана функция}{12}{1996}
+\TrigMath{f(x)=\frac{2\trigcos^4 x+\trigsin^2 x}{2\trigsin^4 x+3\trigcos^2 x}.}
+Найти:
+\begin{TrigParts}
+\item корни уравнения $f(x)=7/15$;
+\item наибольшее и наименьшее значения функции $f(x)$.
+
+\end{TrigParts}
+\end{TrigExercise}
+\begin{TrigExercise}{53}{Решить уравнение}{1}{1997}
+\TrigMath{\frac{\trigcos x}{\trigcos 3x}-\frac{\trigcos 5x}{\trigcos x}=8\trigsin x\trigsin 3x.}
+\end{TrigExercise}
+\begin{TrigExercise}{54}{Решить уравнение}{2}{1997}
+\TrigMath{\frac{\trigsin 3x}{\trigsin x}-\frac{\trigsin x}{\trigsin 3x}=2\trigcos 2x.}
+\end{TrigExercise}
+\begin{TrigExercise}{55}{Решить уравнение}{3}{1997}
+\TrigMath{\frac{\trigsin x}{\trigsin 3x}+\frac{\trigsin 5x}{\trigsin x}=8\trigcos x\trigcos 3x.}
+\end{TrigExercise}
+\begin{TrigExercise}{56}{Решить уравнение}{4}{1997}
+\TrigMath{\frac{\trigsin 3x}{\trigsin 2x}-\frac{\trigcos 3x}{\trigcos 2x}=\frac2{\trigcos 3x}.}
+\end{TrigExercise}
+\begin{TrigExercise}{57}{Решить систему уравнений}{9}{1997}
+\TrigMath{\begin{cases}3\trigcos x\trigcos y+7\trigsin x\trigsin y=4,\\5\trigcos x\trigcos y-3\trigsin x\trigsin y=3.\end{cases}}
+\end{TrigExercise}
+\begin{TrigExercise}{58}{Решить систему уравнений}{10}{1997}
+\TrigMath{\begin{cases}6\trigsin x\trigcos y+2\trigcos x\trigsin y=-3,\\5\trigsin x\trigcos y-3\trigcos x\trigsin y=1.\end{cases}}
+\end{TrigExercise}
+\end{TrigSourcePage}
+
+% Страница 34; 20261013_122222.jpg
+\begin{TrigSourcePage}{34}
+\begin{TrigExercise}{59}{Решить систему уравнений}{11}{1997}
+\TrigMath{\begin{cases}9\trigcos x\trigcos y-5\trigsin x\trigsin y=-6,\\7\trigcos x\trigcos y-3\trigsin x\trigsin y=-4.\end{cases}}
+\end{TrigExercise}
+\begin{TrigExercise}{60}{Решить систему уравнений}{12}{1997}
+\TrigMath{\begin{cases}3\trigsin x\trigcos y-7\trigcos x\trigsin y=6,\\7\trigsin x\trigcos y+5\trigcos x\trigsin y=-2.\end{cases}}
+\end{TrigExercise}
+\begin{TrigExercise}{61}{Решить уравнение}{1}{1998}
+\TrigMath{\frac{\trigsin 3x}{|\trigsin x|}+\frac{3\trigsin x}{\trigsin 3x}=-2.}
+\end{TrigExercise}
+\begin{TrigExercise}{62}{Решить уравнение}{2}{1998}
+\TrigMath{\frac{\trigcos 3x}{|\trigcos x|}+\frac{2\trigcos x}{\trigcos 3x}=-1.}
+\end{TrigExercise}
+\begin{TrigExercise}{63}{Решить уравнение}{3}{1998}
+\TrigMath{\frac{\trigsin 3x}{\trigsin x}+\frac{3|\trigsin x|}{\trigsin 3x}=-2.}
+\end{TrigExercise}
+\begin{TrigExercise}{64}{Решить уравнение}{4}{1998}
+\TrigMath{\frac{\trigcos 3x}{\trigcos x}+\frac{2|\trigcos x|}{\trigcos 3x}=-1.}
+\end{TrigExercise}
+\begin{TrigExercise}{65}{Решить неравенство}{5}{1998}
+\TrigMath{\sqrt[4]{\frac{5+3\trigcos 4x}{8}}>-\trigsin x.}
+\end{TrigExercise}
+\begin{TrigExercise}{66}{Решить неравенство}{6}{1998}
+\TrigMath{\sqrt[4]{\frac{7-\trigcos 4x}{2}}>-2\trigcos x.}
+\end{TrigExercise}
+\begin{TrigExercise}{67}{Решить неравенство}{7}{1998}
+\TrigMath{\sqrt[4]{\frac{7-\trigcos 4x}{2}}>-2\trigsin x.}
+\end{TrigExercise}
+\begin{TrigExercise}{68}{Решить неравенство}{8}{1998}
+\TrigMath{\sqrt[4]{\frac{5+3\trigcos 4x}{8}}>-\trigcos x.}
+\end{TrigExercise}
+\begin{TrigExercise}{69}{Решить уравнение}{1}{1999}
+\TrigMath{\frac{\trigcos 3x-\trigsin x}{\trigcos 5x-\trigsin 3x}=1.}
+\end{TrigExercise}
+\begin{TrigExercise}{70}{Решить уравнение}{2}{1999}
+\TrigMath{\frac{\trigsin 3x-\trigcos x}{\trigcos 3x-\trigsin 5x}=1.}
+\end{TrigExercise}
+\end{TrigSourcePage}
+
+% Страница 35; 20261013_122226.jpg
+\begin{TrigSourcePage}{35}
+\begin{TrigExercise}{71}{Решить уравнение}{3}{1999}
+\TrigMath{\frac{\trigcos 5x+\trigsin 3x}{\trigcos 3x+\trigsin x}=1.}
+\end{TrigExercise}
+\begin{TrigExercise}{72}{Решить уравнение}{4}{1999}
+\TrigMath{\frac{\trigcos 3x+\trigsin 5x}{\trigcos x+\trigsin 3x}=-1.}
+\end{TrigExercise}
+\begin{TrigExercise}{73}{Решить уравнение}{5}{1999}
+\TrigMath{2+\sqrt3\trigsin 2x-|\trigcos 2x|=4\trigsin^2\frac x2.}
+\end{TrigExercise}
+\begin{TrigExercise}{74}{Решить уравнение}{6}{1999}
+\TrigMath{2+\sqrt3\trigcos x+|\trigsin x|=4\trigsin^2 x.}
+\end{TrigExercise}
+\begin{TrigExercise}{75}{Решить уравнение}{7}{1999}
+\TrigMath{2+\sqrt3\trigsin x+|\trigcos x|=4\trigcos^2 x.}
+\end{TrigExercise}
+\begin{TrigExercise}{76}{Решить уравнение}{8}{1999}
+\TrigMath{\sqrt2+\trigcos x-|\trigsin x|=2\sqrt2\trigsin^2 x.}
+\end{TrigExercise}
+\begin{TrigExercise}{77}{Решить уравнение}{1}{2000}
+\TrigMath{\frac{\trigsin^2 7x}{\trigsin^2 x}=16\trigcos 4x(1+2\trigcos 4x)+\frac{\trigcos^2 7x}{\trigcos^2 x}.}
+\end{TrigExercise}
+\begin{TrigExercise}{78}{Решить уравнение}{2}{2000}
+\TrigMath{\frac{\trigsin^2 9x}{\trigsin^2 x}=16\trigctg 2x\trigsin 10x+\frac{\trigcos^2 9x}{\trigcos^2 x}.}
+\end{TrigExercise}
+\begin{TrigExercise}{79}{Решить уравнение}{3}{2000}
+\TrigMath{\frac{\trigsin^2 5x}{\trigsin^2 x}=24\trigcos 2x+\frac{\trigcos^2 5x}{\trigcos^2 x}.}
+\end{TrigExercise}
+\begin{TrigExercise}{80}{Решить уравнение}{4}{2000}
+\TrigMath{\frac{\trigsin^2 3x}{\trigsin^2 x}=8\trigcos 4x+\frac{\trigcos^2 3x}{\trigcos^2 x}.}
+\end{TrigExercise}
+\begin{TrigExercise}{81}{Решить уравнение}{5}{2000}
+\TrigMath{\frac{\trigsin x}{\trigcos 2x\trigcos 3x}+\frac{\trigsin x}{\trigcos 3x\trigcos 4x}=\trigsin 4x-\trigtg 2x.}
+\end{TrigExercise}
+\begin{TrigExercise}{82}{Решить уравнение}{6}{2000}
+\TrigMath{\frac{\trigsin 3x}{\trigcos 2x\trigcos 5x}+\frac{\trigsin 3x}{\trigcos 5x\trigcos 8x}=\trigsin 8x-\trigtg 2x.}
+\end{TrigExercise}
+\begin{TrigExercise}{83}{Решить уравнение}{7}{2000}
+\TrigMath{\frac{\trigsin x}{\trigcos 6x\trigcos 7x}+\frac{\trigsin x}{\trigcos 7x\trigcos 8x}=\trigsin 8x-\trigtg 6x.}
+\end{TrigExercise}
+\begin{TrigExercise}{84}{Решить уравнение}{8}{2000}
+\TrigMath{\frac{\trigsin x}{\trigcos 4x\trigcos 5x}+\frac{\trigsin x}{\trigcos 5x\trigcos 6x}=\trigsin 6x-\trigtg 4x.}
+\end{TrigExercise}
+\end{TrigSourcePage}
+
+% Страница 36; 20261013_122233.jpg
+\begin{TrigSourcePage}{36}
+\begin{TrigExercise}{85}{Решить уравнение}{1}{2001}
+\TrigMath{\frac{\trigcos^3 x\trigsin 3x}{\trigsin x}+\trigsin^2 x\trigcos 3x=6\trigcos 2x\trigcos^2 x.}
+\end{TrigExercise}
+\begin{TrigExercise}{86}{Решить уравнение}{2}{2001}
+\TrigMath{\frac{\trigcos^3 x\trigsin 3x}{\trigcos 2x}+\frac{\trigsin^3 x\trigcos 3x}{\trigcos 2x}=3\trigsin 2x\trigcos x.}
+\end{TrigExercise}
+\begin{TrigExercise}{87}{Решить уравнение}{3}{2001}
+\TrigMath{\frac{\trigsin^3 x\trigcos 3x}{\trigcos x}+\trigcos^2 x\trigsin 3x=6\trigcos 2x\trigsin^2 x.}
+\end{TrigExercise}
+\begin{TrigExercise}{88}{Решить уравнение}{4}{2001}
+\TrigMath{\frac{\trigsin^3 x\trigcos 3x}{\trigcos x}+\trigcos^2 x\trigsin 3x+6\trigcos 2x\trigsin^2 x=0.}
+\end{TrigExercise}
+\begin{TrigExercise}{89}{Решить уравнение}{5}{2001}
+\TrigMath{\trigtg x+\trigtg 3x=4|\trigsin x|.}
+\end{TrigExercise}
+\begin{TrigExercise}{90}{Решить уравнение}{6}{2001}
+\TrigMath{\trigctg x+\trigctg 3x=\sqrt{1+\trigctg^2 x}.}
+\end{TrigExercise}
+\begin{TrigExercise}{91}{Решить уравнение}{7}{2001}
+\TrigMath{\trigctg x+\trigctg 3x=4|\trigcos x|.}
+\end{TrigExercise}
+\begin{TrigExercise}{92}{Решить уравнение}{8}{2001}
+\TrigMath{\trigtg x+\trigtg 3x=\sqrt{1+\trigtg^2 x}.}
+\end{TrigExercise}
+\begin{TrigExercise}{93}{Решить уравнение}{9}{2001}
+\TrigMath{\frac{\trigcos 4x+\trigcos 3x+\trigcos 2x+\trigcos x}{\trigsin 4x+\trigsin 3x-\trigsin 2x-\trigsin x}=\frac{\sqrt2|1-2\trigsin^2 x|}{\trigsin x\trigsin\left(\frac\pi4-x\right)}.}
+\end{TrigExercise}
+\begin{TrigExercise}{94}{Решить уравнение}{10}{2001}
+\TrigMath{\frac{\trigsin 4x+\trigsin 3x-\trigsin 2x-\trigsin x}{\trigcos x+\trigcos 2x+\trigcos 3x+\trigcos 4x}=\frac{|\trigcos 2x|}{\sqrt2\trigsin x\trigsin\left(x+\frac\pi4\right)}.}
+\end{TrigExercise}
+\begin{TrigExercise}{95}{Решить уравнение}{11}{2001}
+\TrigMath{\frac{\trigcos 4x-\trigcos 3x+\trigcos 2x-\trigcos x}{\trigsin 4x-\trigsin 3x-\trigsin 2x+\trigsin x}=\frac{\sqrt2|2\trigcos^2 x-1|}{\trigsin x\trigcos\left(x+\frac\pi4\right)}.}
+\end{TrigExercise}
+\begin{TrigExercise}{96}{Решить уравнение}{12}{2001}
+\TrigMath{\frac{\trigsin 4x-\trigsin 3x-\trigsin 2x+\trigsin x}{\trigcos 4x-\trigcos 3x+\trigcos 2x-\trigcos x}=\frac{|\trigcos 2x|}{\sqrt2\trigsin x\trigcos\left(x-\frac\pi4\right)}.}
+\end{TrigExercise}
+\begin{TrigExercise}{97}{Решить уравнение}{1}{2002}
+\TrigMath{\frac{3+\trigcos 4x-8\trigcos^4 x}{4(\trigcos x+\trigsin x)}=\frac1{\trigsin x}.}
+\end{TrigExercise}
+\end{TrigSourcePage}
+
+% Страница 37; 20261013_122238.jpg
+\begin{TrigSourcePage}{37}
+\begin{TrigExercise}{98}{Решить уравнение}{2}{2002}
+\TrigMath{\frac{3+\trigcos 4x-8\trigsin^4 x}{4(\trigsin x+\trigcos x)}=\frac1{\trigcos x}.}
+\end{TrigExercise}
+\begin{TrigExercise}{99}{Решить уравнение}{3}{2002}
+\TrigMath{\frac{3+4\trigcos 2x-8\trigcos^4 x}{\trigsin 2x-\trigcos 2x}=\frac1{\trigsin 2x}.}
+\end{TrigExercise}
+\begin{TrigExercise}{100}{Решить уравнение}{4}{2002}
+\TrigMath{\frac{3-4\trigcos 2x-8\trigsin^4 x}{\trigsin 2x+\trigcos 2x}=\frac1{\trigsin 2x}.}
+\end{TrigExercise}
+\begin{TrigExercise}{101}{Решить уравнение}{5}{2002}
+\TrigMath{\trigarcctg\frac{2x-1}{x}+\trigarcsin x=\frac\pi2.}
+\end{TrigExercise}
+\begin{TrigExercise}{102}{Решить уравнение}{6}{2002}
+\TrigMath{\trigarcctg\frac{1-x}{2x}+\trigarccos 2x=\frac\pi2.}
+\end{TrigExercise}
+\begin{TrigExercise}{103}{Решить уравнение}{7}{2002}
+\TrigMath{\trigarcctg\frac{1-x}{3x}+\trigarcsin 3x=\frac\pi2.}
+\end{TrigExercise}
+\begin{TrigExercise}{104}{Решить уравнение}{8}{2002}
+\TrigMath{\trigarcctg\frac{3x-1}{x}+\trigarccos x=\frac\pi2.}
+\end{TrigExercise}
+\begin{TrigExercise}{105}{Решить уравнение}{9}{2002}
+\TrigMath{\trigsin^2 2x+\trigsin^2 4x=1-\frac{\trigcos 2x}{\trigcos 3x}.}
+\end{TrigExercise}
+\begin{TrigExercise}{106}{Решить уравнение}{10}{2002}
+\TrigMath{\trigsin^2 x+\trigsin^2 2x=1-\frac{\trigcos 3x}{\trigcos 2x}.}
+\end{TrigExercise}
+\begin{TrigExercise}{107}{Решить уравнение}{11}{2002}
+\TrigMath{\trigcos^2 x+\trigcos^2 2x=1+\trigctg 3x.}
+\end{TrigExercise}
+\begin{TrigExercise}{108}{Решить уравнение}{12}{2002}
+\TrigMath{\trigcos^2 x+\trigcos^2 2x=1+\frac{\trigcos x}{\trigcos 2x}.}
+\end{TrigExercise}
+\begin{TrigExercise}{109}{Решить уравнение}{1}{2003}
+\TrigMath{\trigsin x+|\trigcos x|+\trigsin 4x=\trigcos 2x.}
+\end{TrigExercise}
+\begin{TrigExercise}{110}{Решить уравнение}{2}{2003}
+\TrigMath{\trigcos x+|\trigsin x|+\trigcos 2x=\trigsin 4x.}
+\end{TrigExercise}
+\begin{TrigExercise}{111}{Решить уравнение}{3}{2003}
+\TrigMath{\trigsin x+|\trigcos x|=\trigsin 4x+\trigcos 2x.}
+\end{TrigExercise}
+\begin{TrigExercise}{112}{Решить уравнение}{4}{2003}
+\TrigMath{\trigcos x+|\trigsin x|+\trigsin 4x=-\trigcos 2x.}
+\end{TrigExercise}
+\end{TrigSourcePage}
+
+% Страница 38; 20261013_122244.jpg
+\begin{TrigSourcePage}{38}
+\begin{TrigExercise}{113}{Решить уравнение}{5}{2003}
+\TrigMath{\frac{\trigcos 3x}{\trigcos x}(1-\trigsin^2 x\trigcos 2x-2\trigsin^2 x)=1.}
+\end{TrigExercise}
+\begin{TrigExercise}{114}{Решить уравнение}{6}{2003}
+\TrigMath{\frac{\trigcos 5x}{\trigcos x}(-1-\trigsin^2 x\trigcos 2x+2\trigcos^2 x)=1.}
+\end{TrigExercise}
+\begin{TrigExercise}{115}{Решить уравнение}{7}{2003}
+\TrigMath{\frac{\trigcos 5x}{\trigcos x}(1-2\trigsin^2 x-\trigsin^2 x\trigcos 2x)=1.}
+\end{TrigExercise}
+\begin{TrigExercise}{116}{Решить уравнение}{8}{2003}
+\TrigMath{\frac{\trigcos 3x}{\trigcos x}(2\trigcos^2 x-\trigsin^2 x\trigcos 2x-1)=1.}
+\end{TrigExercise}
+\begin{TrigExercise}{117}{Решить уравнение}{9}{2003}
+\TrigMath{\frac{\trigsin 3x\trigcos 5x+|\trigsin 5x\trigcos 3x|}{\trigsin 2x}=2\trigcos 2x.}
+\end{TrigExercise}
+\begin{TrigExercise}{118}{Решить уравнение}{10}{2003}
+\TrigMath{\frac{\trigcos 3x\trigcos 5x+|\trigsin 5x\trigsin 3x|}{\trigsin 2x}=2\trigcos 2x.}
+\end{TrigExercise}
+\begin{TrigExercise}{119}{Решить уравнение}{11}{2003}
+\TrigMath{\frac{\trigcos 3x\trigsin 5x+|\trigcos 5x\trigsin 3x|}{\trigcos 2x}=2\trigsin 2x.}
+\end{TrigExercise}
+\begin{TrigExercise}{120}{Решить уравнение}{12}{2003}
+\TrigMath{\frac{|\trigcos 5x\trigcos 3x|-\trigsin 3x\trigsin 5x}{\trigcos 2x}=2\trigsin 2x.}
+\end{TrigExercise}
+\begin{TrigExercise}{121}{Решить уравнение}{1}{2004}
+\TrigMath{\trigsin 3x+\trigcos 2x=\trigcos 4x-3|\trigsin x|.}
+\end{TrigExercise}
+\begin{TrigExercise}{122}{Решить уравнение}{2}{2004}
+\TrigMath{\trigcos 3x+\trigcos 2x=3|\trigcos x|-\trigcos 4x.}
+\end{TrigExercise}
+\begin{TrigExercise}{123}{Решить уравнение}{3}{2004}
+\TrigMath{\trigsin 3x-\trigcos 2x=3|\trigsin x|-\trigcos 4x.}
+\end{TrigExercise}
+\begin{TrigExercise}{124}{Решить уравнение}{4}{2004}
+\TrigMath{\trigcos 3x-\trigcos 2x=\trigcos 4x-3|\trigcos x|.}
+\end{TrigExercise}
+\begin{TrigExercise}{125}{Решить уравнение}{5}{2004}
+\TrigMath{\trigsin x\sqrt{1-\trigcos x-2\trigsin x}=\trigsin x+\trigcos x.}
+\end{TrigExercise}
+\begin{TrigExercise}{126}{Решить уравнение}{6}{2004}
+\TrigMath{\trigcos x\sqrt{1+\trigsin x-2\trigcos x}=\trigcos x-\trigsin x.}
+\end{TrigExercise}
+\begin{TrigExercise}{127}{Решить уравнение}{7}{2004}
+\TrigMath{\trigsin x\sqrt{1+\trigcos x-2\trigsin x}=\trigsin x-\trigcos x.}
+\end{TrigExercise}
+\end{TrigSourcePage}
+
+% Страница 39; 20261013_122251.jpg
+\begin{TrigSourcePage}{39}
+\begin{TrigExercise}{128}{Решить уравнение}{8}{2004}
+\TrigMath{\trigcos x\sqrt{1+\trigsin x+2\trigcos x}=\trigsin x+\trigcos x.}
+\end{TrigExercise}
+\begin{TrigExercise}{129}{Решить уравнение}{9}{2004}
+\TrigMath{\frac{2\trigsin 3x}{\trigsin x}=\frac{|\trigcos 6x|}{\trigcos 2x}.}
+\end{TrigExercise}
+\begin{TrigExercise}{130}{Решить уравнение}{10}{2004}
+\TrigMath{\frac{\trigsin 6x}{|\trigsin 4x|}=\frac{\trigcos 3x}{\trigcos x}.}
+\end{TrigExercise}
+\begin{TrigExercise}{131}{Решить уравнение}{11}{2004}
+\TrigMath{\frac{2\trigsin 3x}{|\trigsin x|}=\frac{\trigcos 6x}{\trigcos 2x}.}
+\end{TrigExercise}
+\begin{TrigExercise}{132}{Решить уравнение}{12}{2004}
+\TrigMath{\frac{\trigsin 6x}{\trigsin 4x}=\frac{\trigcos 3x}{|\trigcos x|}.}
+\end{TrigExercise}
+\begin{TrigExercise}{133}{Решить уравнение}{1}{2005}
+\TrigMath{(3\trigsin x+4\trigcos x)(20+12\trigsin x+5\trigcos 2x)=143.}
+\end{TrigExercise}
+\begin{TrigExercise}{134}{Решить уравнение}{2}{2005}
+\TrigMath{(5\trigsin x+12\trigcos x)(100+48\trigcos x-13\trigcos 2x)=1757.}
+\end{TrigExercise}
+\begin{TrigExercise}{135}{Решить уравнение}{3}{2005}
+\TrigMath{(8\trigsin x+15\trigcos x)(53+32\trigsin x+17\trigcos 2x)=1318.}
+\end{TrigExercise}
+\begin{TrigExercise}{136}{Решить уравнение}{4}{2005}
+\TrigMath{(24\trigsin x+7\trigcos x)(75+28\trigcos x-25\trigcos 2x)=2598.}
+\end{TrigExercise}
+\begin{TrigExercise}{137}{Решить уравнение}{5}{2005}
+\TrigMath{\frac{\trigsin\frac x2\trigsin\frac{3x}2}{\trigcos x\trigcos 2x}+\frac{\trigsin\frac x2\trigsin\frac{5x}2}{\trigcos 2x\trigcos 3x}=\frac{2\trigsin x\trigsin 2x}{\trigcos x\trigcos 3x}-\frac1{4\trigcos 3x}.}
+\end{TrigExercise}
+\begin{TrigExercise}{138}{Решить уравнение}{6}{2005}
+\TrigMath{\frac{\trigsin\frac{3x}2\trigsin\frac{5x}2}{\trigcos x\trigcos 4x}-\frac{\trigsin\frac x2\trigsin\frac{7x}2}{\trigcos 4x\trigcos 3x}=\frac{2\trigsin x\trigsin 2x}{\trigcos x\trigcos 3x}-\frac1{5\trigcos x}.}
+\end{TrigExercise}
+\begin{TrigExercise}{139}{Решить уравнение}{7}{2005}
+\TrigMath{\frac{\trigsin\frac x2\trigsin\frac{5x}2}{\trigcos 2x\trigcos 3x}+\frac{\trigsin\frac{3x}2\trigsin\frac{9x}2}{\trigcos 3x\trigcos 6x}=\frac{2\trigsin 2x\trigsin 4x}{\trigcos 2x\trigcos 6x}-\frac1{3\trigcos 6x}.}
+\end{TrigExercise}
+\begin{TrigExercise}{140}{Решить уравнение}{8}{2005}
+\TrigMath{\frac{\trigsin x\trigsin 2x}{\trigcos 2x\trigcos 3x}-\frac{\trigsin\frac x2\trigsin\frac{5x}2}{\trigcos 3x\trigcos 2x}=\frac{2\trigsin\frac x2\trigsin\frac{3x}2}{\trigcos x\trigcos 2x}-\frac{1+2\sqrt2}{2\trigcos 2x}.}
+\end{TrigExercise}
+\begin{TrigExercise}{141}{Решить уравнение}{9}{2005}
+\TrigMath{\frac{\trigcos^5 x-\trigsin^5 x}{\sqrt2\trigcos\left(x+\frac\pi4\right)}+\frac{\trigcos^5 x+\trigsin^5 x}{\sqrt2\trigcos\left(x-\frac\pi4\right)}=\frac98+\trigcos 2x.}
+\end{TrigExercise}
+\end{TrigSourcePage}
+
+% Страница 40; 20261013_122257.jpg
+\begin{TrigSourcePage}{40}
+\begin{TrigExercise}{142}{Решить уравнение}{10}{2005}
+\TrigMath{\frac{\trigcos^3 x-\trigsin^3 x}{\sqrt8\trigcos\left(x+\frac\pi4\right)}-\frac{\trigcos^3 x+\trigsin^3 x}{\sqrt8\trigcos\left(x-\frac\pi4\right)}=\frac{1+2\trigcos^4 2x}{3\trigsin 2x}.}
+\end{TrigExercise}
+\begin{TrigExercise}{143}{Решить уравнение}{11}{2005}
+\TrigMath{\frac{\trigsin^5 x-\trigcos^5 x}{\sqrt2\trigsin\left(x-\frac\pi4\right)}+\frac{\trigsin^5 x+\trigcos^5 x}{\sqrt2\trigsin\left(x+\frac\pi4\right)}=\frac78-\frac32\trigcos 2x.}
+\end{TrigExercise}
+\begin{TrigExercise}{144}{Решить уравнение}{12}{2005}
+\TrigMath{\frac{\trigcos^3 x+\trigsin^3 x}{\sqrt8\trigsin\left(x+\frac\pi4\right)}-\frac{\trigsin^3 x-\trigcos^3 x}{\sqrt8\trigsin\left(x-\frac\pi4\right)}=\frac{1-2\trigcos^4 2x}{\trigsin 2x}.}
+\end{TrigExercise}
+\begin{TrigExercise}{145}{Решить уравнение}{1}{2006}
+\TrigMath{8\trigcos^2 x\trigsin x+\trigcos x=\trigcos 3x+6\trigsin x.}
+\end{TrigExercise}
+\begin{TrigExercise}{146}{Решить уравнение}{2}{2006}
+\TrigMath{5\trigsin 3x+16\trigcos x+5\trigsin x=12\trigcos^3 x.}
+\end{TrigExercise}
+\begin{TrigExercise}{147}{Решить уравнение}{3}{2006}
+\TrigMath{20\trigsin^3 x+3\trigcos x=3\trigcos 3x+4\trigsin x.}
+\end{TrigExercise}
+\begin{TrigExercise}{148}{Решить уравнение}{4}{2006}
+\TrigMath{8\trigsin^2 x\trigcos x-3\trigsin 3x=3\trigsin x-2\trigcos x.}
+\end{TrigExercise}
+\begin{TrigExercise}{149}{Решить уравнение}{5}{2006}
+\TrigMath{\trigsin 3x\sqrt{\trigctg\left(\frac\pi4-x\right)}=\trigcos\left(2x-\frac\pi4\right)-\trigcos\left(4x+\frac\pi4\right).}
+\end{TrigExercise}
+\begin{TrigExercise}{150}{Решить уравнение}{6}{2006}
+\TrigMath{\trigsin 3x\sqrt{\trigctg\left(\frac\pi4+x\right)}=\trigcos\left(2x+\frac\pi4\right)-\trigcos\left(4x-\frac\pi4\right).}
+\end{TrigExercise}
+\begin{TrigExercise}{151}{Решить уравнение}{7}{2006}
+\TrigMath{\trigcos 3x\sqrt{-\trigctg\left(x+\frac\pi4\right)}=\trigcos\left(4x+\frac\pi4\right)-\trigcos\left(2x+\frac{3\pi}4\right).}
+\end{TrigExercise}
+\begin{TrigExercise}{152}{Решить уравнение}{8}{2006}
+\TrigMath{\trigcos 3x\sqrt{\trigctg\left(\frac{3\pi}4-x\right)}=\trigcos\left(2x+\frac{3\pi}4\right)-\trigcos\left(4x+\frac\pi4\right).}
+\end{TrigExercise}
+\begin{TrigExercise}{153}{Решить уравнение}{9}{2006}
+\TrigMath{\frac{\trigctg x\trigctg 2x}{\trigctg 2x-\trigctg x}=\frac{\trigctg 4x\trigctg 3x}{\trigctg 4x-\trigctg 3x}.}
+\end{TrigExercise}
+\begin{TrigExercise}{154}{Решить уравнение}{10}{2006}
+\TrigMath{\frac{\trigtg 2x\trigctg 3x}{\trigtg 2x+\trigctg 3x}=\frac{\trigctg 4x\trigtg 3x}{\trigctg 4x+\trigtg 3x}.}
+\end{TrigExercise}
+\end{TrigSourcePage}
+
+% Страница 41; 20261013_122300.jpg
+\begin{TrigSourcePage}{41}
+\begin{TrigExercise}{155}{Решить уравнение}{11}{2006}
+\TrigMath{\frac{\trigtg 4x\trigtg 5x}{\trigtg 5x-\trigtg 4x}=\frac{\trigtg 3x\trigtg 2x}{\trigtg 3x-\trigtg 2x}.}
+\end{TrigExercise}
+\begin{TrigExercise}{156}{Решить уравнение}{12}{2006}
+\TrigMath{\frac{\trigctg 2x\trigctg 3x}{\trigctg 3x-\trigctg 2x}=\frac{\trigtg x\trigtg 2x}{\trigtg x-\trigtg 2x}.}
+\end{TrigExercise}
+\begin{TrigExercise}{157}{Решить уравнение}{13}{2006}
+\TrigMath{(\sqrt3\trigcos 2x+\trigsin 2x)^2=7+3\trigcos\left(2x-\frac\pi6\right).}
+\end{TrigExercise}
+\begin{TrigExercise}{158}{Решить уравнение}{14}{2006}
+\TrigMath{(\sqrt3\trigsin 2x-\trigcos 2x)^2=6-2\trigcos\left(2x-\frac{2\pi}3\right).}
+\end{TrigExercise}
+\begin{TrigExercise}{159}{Решить уравнение}{15}{2006}
+\TrigMath{(\sqrt3\trigsin 2x+\trigcos 2x)^2=8-4\trigcos\left(2x+\frac{2\pi}3\right).}
+\end{TrigExercise}
+\begin{TrigExercise}{160}{Решить уравнение}{16}{2006}
+\TrigMath{(\sqrt3\trigcos 2x-\trigsin 2x)^2=5+\trigcos\left(2x+\frac\pi6\right).}
+\end{TrigExercise}
+\begin{TrigExercise}{161}{Решить уравнение}{1}{2007}
+\TrigMath{\trigsin 2x=2\trigsin^3|x|+\trigsin 2x\trigcos x.}
+\end{TrigExercise}
+\begin{TrigExercise}{162}{Решить уравнение}{2}{2007}
+\TrigMath{\trigsin 2x=2\trigsin^3 x+\trigsin|2x|\trigcos x.}
+\end{TrigExercise}
+\begin{TrigExercise}{163}{Решить уравнение}{3}{2007}
+\TrigMath{2\trigcos 2x=2\trigsin^3|x|+\trigsin 2x\trigcos x.}
+\end{TrigExercise}
+\begin{TrigExercise}{164}{Решить уравнение}{4}{2007}
+\TrigMath{2\trigcos 2x=2\trigcos^3 x+\trigsin 2x\trigsin|x|.}
+\end{TrigExercise}
+\begin{TrigExercise}{165}{Решить уравнение}{5}{2007}
+\TrigMath{\frac{\trigcos 9x-2\trigcos 6x+1}{\trigcos 3x-1}=|\trigcos 3x|.}
+\end{TrigExercise}
+\begin{TrigExercise}{166}{Решить уравнение}{6}{2007}
+\TrigMath{\frac{\trigsin 3x-2\trigcos 2x-1}{1-\trigsin x}=|\trigsin x|.}
+\end{TrigExercise}
+\begin{TrigExercise}{167}{Решить уравнение}{7}{2007}
+\TrigMath{\frac{\trigsin 9x+4\trigsin^2 3x-3}{1-\trigsin 3x}=|\trigsin 3x|.}
+\end{TrigExercise}
+\begin{TrigExercise}{168}{Решить уравнение}{8}{2007}
+\TrigMath{\frac{\trigcos 3x+4\trigsin^2 x-1}{\trigcos x-1}=|\trigcos x|.}
+\end{TrigExercise}
+\end{TrigSourcePage}
+
+% Страница 42; 20261013_122306.jpg
+\begin{TrigSourcePage}{42}
+\begin{TrigExercise}{169}{Решить уравнение}{9}{2007}
+\TrigMath{\trigtg\left(\frac{2\pi\trigcos^2 x+\pi}{4\trigcos^6 x+1}\right)+\trigctg\left(\frac\pi6+\frac\pi{4\trigcos^6 x+1}\right)=0.}
+\end{TrigExercise}
+\begin{TrigExercise}{170}{Решить уравнение}{10}{2007}
+\TrigMath{\trigctg\left(\frac\pi6-\frac{2\pi\trigsin^2 x+\pi}{4\trigsin^6 x+1}\right)-\trigtg\left(\frac\pi{4\trigsin^6 x+1}\right)=0.}
+\end{TrigExercise}
+\begin{TrigExercise}{171}{Решить уравнение}{11}{2007}
+\TrigMath{\trigctg\left(\frac{3\pi}4+\frac{2\pi\trigcos^2 x+\pi}{4\trigcos^6 x+1}\right)+\trigtg\left(\frac\pi{4\trigcos^6 x+1}-\frac\pi{12}\right)=0.}
+\end{TrigExercise}
+\begin{TrigExercise}{172}{Решить уравнение}{12}{2007}
+\TrigMath{\trigtg\left(\frac{2\pi\trigsin^2 x+\pi}{4\trigsin^6 x+1}-\frac\pi3\right)-\trigctg\left(\frac\pi6-\frac\pi{4\trigsin^6 x+1}\right)=0.}
+\end{TrigExercise}
+\begin{TrigExercise}{173}{Решить уравнение}{13}{2007}
+\TrigMath{3+\trigcos 6x=2\frac{\trigsin 3x}{\trigcos 4x}-4\trigtg^2 4x.}
+\end{TrigExercise}
+\begin{TrigExercise}{174}{Решить уравнение}{14}{2007}
+\TrigMath{9+\trigcos 12x=10\frac{\trigcos 6x}{\trigsin 5x}-8\trigctg^2 5x.}
+\end{TrigExercise}
+\begin{TrigExercise}{175}{Решить уравнение}{15}{2007}
+\TrigMath{11+\trigcos 8x=-12\frac{\trigcos 4x}{\trigsin 3x}-10\trigctg^2 3x.}
+\end{TrigExercise}
+\begin{TrigExercise}{176}{Решить уравнение}{16}{2007}
+\TrigMath{11+\trigcos 10x=-10\frac{\trigsin 5x}{\trigcos 6x}-12\trigtg^2 6x.}
+\end{TrigExercise}
+\begin{TrigExercise}{177}{Решить уравнение}{1}{2008}
+\TrigMath{\frac{4\trigcos^2 2x\trigcos 4x+3\trigcos 2x+\trigcos 6x}{\trigcos 3x}=0.}
+\end{TrigExercise}
+\begin{TrigExercise}{178}{Решить уравнение}{2}{2008}
+\TrigMath{\frac{4\trigsin^2 2x\trigsin 4x-\trigsin 6x+3\trigsin 2x}{\trigsin 2x}=0.}
+\end{TrigExercise}
+\begin{TrigExercise}{179}{Решить уравнение}{3}{2008}
+\TrigMath{\frac{4\trigcos 4x\trigcos^2 2x-3\trigcos 2x-\trigcos 6x}{2\trigsin^2 x-1}=0.}
+\end{TrigExercise}
+\begin{TrigExercise}{180}{Решить уравнение}{4}{2008}
+\TrigMath{\frac{64\trigsin^3 x\trigcos^5 x+\trigsin 6x-3\trigsin 2x}{\trigsin x\trigcos x}=0.}
+\end{TrigExercise}
+\begin{TrigExercise}{181}{Решить уравнение}{5}{2008}
+\TrigMath{\frac{\trigsin^3 x\trigcos 3x+\trigcos^3 x\trigsin 3x}{|\trigsin 2x|}=\frac34.}
+\end{TrigExercise}
+\end{TrigSourcePage}
+
+% Страница 43; 20261013_122311.jpg
+\begin{TrigSourcePage}{43}
+\begin{TrigExercise}{182}{Решить уравнение}{6}{2008}
+\TrigMath{\frac{\trigsin^3 x\trigcos 3x-\trigcos^3 x\trigsin 3x+\frac14\trigsin 6x}{|\trigsin x|}=\frac34.}
+\end{TrigExercise}
+\begin{TrigExercise}{183}{Решить уравнение}{7}{2008}
+\TrigMath{\frac{\trigsin^3 x\trigcos 3x+\trigcos^3 x\trigsin 3x}{|\trigcos 2x|}=\frac34.}
+\end{TrigExercise}
+\begin{TrigExercise}{184}{Решить уравнение}{8}{2008}
+\TrigMath{\frac{\trigsin^3 x\trigcos 3x-\trigcos^3 x\trigsin 3x+\frac14\trigsin 6x}{|\trigcos x|}=\frac34.}
+\end{TrigExercise}
+\begin{TrigExercise}{185}{Решить уравнение}{9}{2008}
+\TrigMath{\sqrt{7-\sqrt6\trigtg x}+\sqrt7\trigcos x=0.}
+\end{TrigExercise}
+\begin{TrigExercise}{186}{Решить уравнение}{10}{2008}
+\TrigMath{\sqrt{4+\sqrt3\trigctg x}+2\trigsin x=0.}
+\end{TrigExercise}
+\begin{TrigExercise}{187}{Решить уравнение}{11}{2008}
+\TrigMath{\sqrt{9+\sqrt8\trigtg x}+3\trigcos x=0.}
+\end{TrigExercise}
+\begin{TrigExercise}{188}{Решить уравнение}{12}{2008}
+\TrigMath{\sqrt{11-\sqrt{10}\trigctg x}+\sqrt{11}\trigsin x=0.}
+\end{TrigExercise}
+\begin{TrigExercise}{189}{Решить уравнение}{13}{2008}
+\TrigMath{\frac{\trigtg x}2+\frac1{\trigsin x}=\frac1{\trigsin 3x}-\frac{\trigctg x}2.}
+\end{TrigExercise}
+\begin{TrigExercise}{190}{Решить уравнение}{14}{2008}
+\TrigMath{\trigtg 2x-\frac1{\trigsin x}=\frac1{\trigsin 3x}-\trigctg x.}
+\end{TrigExercise}
+\begin{TrigExercise}{191}{Решить уравнение}{15}{2008}
+\TrigMath{\trigtg x-\frac1{\trigsin x}=\trigctg x-\frac1{\trigsin 3x}.}
+\end{TrigExercise}
+\begin{TrigExercise}{192}{Решить уравнение}{16}{2008}
+\TrigMath{\trigtg x+\frac1{\trigsin 3x}=\frac1{\trigsin x}-\trigctg 2x.}
+\end{TrigExercise}
+\begin{TrigExercise}{193}{Найти решения уравнения}{1}{2009}
+\TrigMath{\frac{\trigcos x}{\trigcos 3x}-\frac{\trigcos 5x}{\trigcos x}=8\trigsin x\trigsin 3x,}
+удовлетворяющие неравенству $\trigsin x\geq0$.
+\end{TrigExercise}
+\begin{TrigExercise}{194}{Найти решения уравнения}{2}{2009}
+\TrigMath{\begin{aligned}\frac{\trigsin x}{\trigcos 3x}+\frac{\trigcos 5x}{\trigsin x}&{}\\{}+4(\trigsin 4x+\trigsin 2x) &=8\trigcos x\trigsin 3x,\end{aligned}}
+удовлетворяющие неравенству $\trigcos x>0$.
+\end{TrigExercise}
+\end{TrigSourcePage}
+
+% Страница 44; 20261013_122318.jpg
+\begin{TrigSourcePage}{44}
+\begin{TrigExercise}{195}{Найти решения уравнения}{3}{2009}
+\TrigMath{\frac{\trigcos x}{\trigcos 3x}-\frac{\trigcos 5x}{\trigcos x}+8\trigsin x\trigsin 3x=0,}
+удовлетворяющие неравенству $\trigsin x\geq0$.
+\end{TrigExercise}
+\begin{TrigExercise}{196}{Найти решения уравнения}{4}{2009}
+\TrigMath{\begin{aligned}\frac{\trigsin x}{\trigcos 3x}+\frac{\trigcos 5x}{\trigsin x}&{}\\{}+4(\trigsin 4x+\trigsin 2x)+8\trigcos x\trigsin 3x &=0,\end{aligned}}
+удовлетворяющие неравенству $\trigsin 3x<0$.
+\end{TrigExercise}
+\begin{TrigExercise}{197}{Решить уравнение}{5}{2009}
+\TrigMath{\frac{\trigcos 3x}{\trigsin 3x-2\trigsin x}=\trigtg^2 x.}
+\end{TrigExercise}
+\begin{TrigExercise}{198}{Решить уравнение}{6}{2009}
+\TrigMath{\frac{\trigsin 4x}{4\trigcos x+\trigcos 3x}=-4\trigsin^3 x.}
+\end{TrigExercise}
+\begin{TrigExercise}{199}{Решить уравнение}{7}{2009}
+\TrigMath{\frac{\trigsin 3x}{\trigcos 3x+2\trigcos x}=\trigctg^2 x.}
+\end{TrigExercise}
+\begin{TrigExercise}{200}{Решить уравнение}{8}{2009}
+\TrigMath{\frac{\trigsin 4x}{4\trigsin x-\trigsin 3x}=4\trigcos^3 x.}
+\end{TrigExercise}
+\begin{TrigExercise}{201}{Решить уравнение}{9}{2009}
+\TrigMath{\trigtg 3x-\frac1{\trigcos 3x}=\trigtg x-\frac1{\trigcos x}-\frac{\trigsin 4x}{\trigcos x\trigcos 3x}.}
+\end{TrigExercise}
+\begin{TrigExercise}{202}{Решить уравнение}{10}{2009}
+\TrigMath{\trigtg 3x+\frac1{\trigcos 3x}=\trigtg x+\frac1{\trigcos x}-\frac{\trigsin 4x}{\trigcos x\trigcos 3x}.}
+\end{TrigExercise}
+\begin{TrigExercise}{203}{Решить уравнение}{10}{2009}
+\TrigMath{\trigtg 6x-\frac1{\trigcos 6x}=\trigtg 2x-\frac1{\trigcos 2x}-\frac{\trigsin 8x}{\trigcos 2x\trigcos 6x}.}
+\end{TrigExercise}
+\begin{TrigExercise}{204}{Решить уравнение}{12}{2009}
+\TrigMath{\trigtg 6x+\frac1{\trigcos 6x}=\trigtg 2x+\frac1{\trigcos 2x}-\frac{\trigsin 8x}{\trigcos 2x\trigcos 6x}.}
+\end{TrigExercise}
+\begin{TrigExercise}{205}{Решить уравнение}{1}{2010}
+\TrigMath{\frac{\trigsin 3x\trigcos 5x-\trigsin 2x\trigcos 6x}{\trigcos x}=0.}
+\end{TrigExercise}
+\begin{TrigExercise}{206}{Решить уравнение}{2}{2010}
+\TrigMath{\frac{\trigsin 5x\trigcos 3x-\trigsin 7x\trigcos x}{\trigcos 2x+\trigsin 2x}=0.}
+\end{TrigExercise}
+\begin{TrigExercise}{207}{Решить уравнение}{3}{2010}
+\TrigMath{\frac{\trigsin 2x\trigcos 10x-\trigsin 4x\trigcos 8x}{\trigcos 2x}=0.}
+\end{TrigExercise}
+\end{TrigSourcePage}
+
+% Страница 45; 20261013_122321.jpg
+\begin{TrigSourcePage}{45}
+\begin{TrigExercise}{208}{Решить уравнение}{4}{2010}
+\TrigMath{\frac{\trigsin 7x\trigcos x-\trigsin 5x\trigcos 3x}{\trigcos 2x-\trigsin 2x}=0.}
+\end{TrigExercise}
+\begin{TrigExercise}{209}{Решить уравнение}{5}{2010}
+\TrigMath{\trigsin 3x+3|\trigsin x|=\trigcos 4x-\trigcos 2x.}
+\end{TrigExercise}
+\begin{TrigExercise}{210}{Решить систему уравнений}{5}{2010}
+\TrigMath{\begin{cases}\trigsin x+\sqrt2\trigcos y=\frac32,\\\sqrt2\trigsin y+\sqrt3\trigcos x=\frac52.\end{cases}}
+\end{TrigExercise}
+\begin{TrigExercise}{211}{Решить уравнение}{6}{2010}
+\TrigMath{\trigsin 3x-3|\trigsin x|=\trigcos 4x-\trigcos 2x.}
+\end{TrigExercise}
+\begin{TrigExercise}{212}{Решить систему уравнений}{6}{2010}
+\TrigMath{\begin{cases}\sqrt2\trigsin x-\sqrt3\trigcos y=\frac52,\\\trigsin y+\sqrt2\trigcos x=-\frac32.\end{cases}}
+\end{TrigExercise}
+\begin{TrigExercise}{213}{Решить уравнение}{7}{2010}
+\TrigMath{3|\trigcos x|-\trigcos 3x=\trigcos 4x+\trigcos 2x.}
+\end{TrigExercise}
+\begin{TrigExercise}{214}{Решить систему уравнений}{7}{2010}
+\TrigMath{\begin{cases}\sqrt3\trigsin x-\sqrt2\trigcos y=\frac52,\\\sqrt2\trigsin y-\trigcos x=\frac32.\end{cases}}
+\end{TrigExercise}
+\begin{TrigExercise}{215}{Решить уравнение}{8}{2010}
+\TrigMath{3|\trigcos x|+\trigcos 2x+\trigcos 3x+\trigcos 4x=0.}
+\end{TrigExercise}
+\begin{TrigExercise}{216}{Решить систему уравнений}{8}{2010}
+\TrigMath{\begin{cases}\sqrt2\trigcos x-\sqrt3\trigsin y=\frac52,\\\trigcos y-\sqrt2\trigsin x=-\frac32.\end{cases}}
+\end{TrigExercise}
+\begin{TrigExercise}{217}{Решить уравнение}{5}{2011}
+\TrigMath{\sqrt{8\trigtg x+22\trigctg x}=-\sqrt{15}(\trigsin x+\trigcos x).}
+\end{TrigExercise}
+\begin{TrigExercise}{218}{Решить уравнение}{6}{2011}
+\TrigMath{\sqrt{4\trigtg x-14\trigctg x}=\sqrt5(\trigsin x-\trigcos x).}
+\end{TrigExercise}
+\begin{TrigExercise}{219}{Решить уравнение}{7}{2011}
+\TrigMath{\sqrt{7\trigtg x+33\trigctg x}=2\sqrt5(\trigsin x+\trigcos x).}
+\end{TrigExercise}
+\begin{TrigExercise}{220}{Решить уравнение}{8}{2011}
+\TrigMath{\sqrt{2\trigtg x-12\trigctg x}=\sqrt5(\trigcos x-\trigsin x).}
+\end{TrigExercise}
+\end{TrigSourcePage}
+
+% Страница 46; 20261013_122327.jpg
+\begin{TrigSourcePage}{46}
+\begin{TrigExercise}{221}{Решить уравнение}{1}{2012}
+\TrigMath{\trigcos^2 2x+\trigcos^2 4x=1+\trigctg 6x.}
+\end{TrigExercise}
+\begin{TrigExercise}{222}{Решить уравнение}{2}{2012}
+\TrigMath{\trigsin^2 2x+\trigsin^2 x=1+\trigctg 3x.}
+\end{TrigExercise}
+\begin{TrigExercise}{223}{Решить уравнение}{3}{2012}
+\TrigMath{\trigcos^2 2x+\trigcos^2 x=1+\trigctg 3x.}
+\end{TrigExercise}
+\begin{TrigExercise}{224}{Решить уравнение}{4}{2012}
+\TrigMath{\trigsin^2 2x+\trigsin^2 4x=1+\trigctg 6x.}
+\end{TrigExercise}
+\begin{TrigExercise}{225}{Найти наименьший корень уравнения}{5}{2012}
+\TrigMath{\trigctg 6x-\trigtg 5x=\frac1{\trigcos 5x},}
+принадлежащий отрезку $[8\pi/17;40\pi/17]$.
+\end{TrigExercise}
+\begin{TrigExercise}{226}{Найти наименьший корень уравнения}{6}{2012}
+\TrigMath{\trigtg 12x+\trigtg 7x=\frac1{\trigcos 7x},}
+принадлежащий отрезку $[46\pi/31;92\pi/31]$.
+\end{TrigExercise}
+\begin{TrigExercise}{227}{Найти наибольший корень уравнения}{7}{2012}
+\TrigMath{\trigtg 7x-\trigtg 10x=\frac1{\trigcos 7x},}
+принадлежащий отрезку $[2\pi/13;46\pi/13]$.
+\end{TrigExercise}
+\begin{TrigExercise}{228}{Найти наибольший корень уравнения}{8}{2012}
+\TrigMath{\trigctg 12x+\trigtg 5x=\frac1{\trigcos 5x},}
+принадлежащий отрезку $[-47\pi/19;-9\pi/19]$.
+\end{TrigExercise}
+\begin{TrigExercise}{229}{Решить неравенство}{1}{2013}
+\TrigMath{\sqrt{3+4\trigcos^2 x}=\frac{\trigsin x}{\sqrt3}+3\trigcos x.}
+\end{TrigExercise}
+\begin{TrigExercise}{230}{Решить неравенство}{2}{2013}
+\TrigMath{\sqrt{1+7\trigsin^2 x}=2\trigcos x-\sqrt3\trigsin x.}
+\end{TrigExercise}
+\begin{TrigExercise}{231}{Решить неравенство}{3}{2013}
+\TrigMath{\sqrt{6+\frac{22}{3}\trigsin^2 x}=3\trigcos x+\frac2{\sqrt3}\trigsin x.}
+\end{TrigExercise}
+\begin{TrigExercise}{232}{Решить неравенство}{4}{2013}
+\TrigMath{\sqrt{3+\frac{25}{2}\trigsin^2 x}=\sqrt6\trigcos x-\frac1{\sqrt2}\trigsin x.}
+\end{TrigExercise}
+\end{TrigSourcePage}
+
+% Страница 47; 20261013_122330.jpg
+\begin{TrigSourcePage}{47}
+\begin{TrigExercise}{233}{Решить уравнение}{5}{2013}
+\TrigMath{2\sqrt7\trigsin\left(\frac x2-\frac\pi2\right)=\sqrt{27+\trigsin\left(3x+\frac\pi2\right)}.}
+\end{TrigExercise}
+\begin{TrigExercise}{234}{Решить уравнение}{6}{2013}
+\TrigMath{\sqrt{38}\trigcos\left(\frac x2+\frac{3\pi}4\right)=\sqrt{37-\trigsin 3x}.}
+\end{TrigExercise}
+\begin{TrigExercise}{235}{Решить уравнение}{7}{2013}
+\TrigMath{2\sqrt6\trigcos\left(\frac x2+\frac\pi2\right)=\sqrt{23+\trigsin\left(3x-\frac\pi2\right)}.}
+\end{TrigExercise}
+\begin{TrigExercise}{236}{Решить уравнение}{8}{2013}
+\TrigMath{\sqrt{29+\trigsin 3x}=\sqrt{30}\trigsin\left(\frac x2-\frac\pi4\right).}
+\end{TrigExercise}
+\begin{TrigExercise}{237}{Решить уравнение}{1}{2014}
+\TrigMath{\frac{\trigcos x\trigcos\left(x+\frac\pi4\right)}{7\trigcos^2 x+5\trigsin^2 x-6}+\frac{\trigcos x\trigsin\left(x+\frac\pi4\right)}{6-5\trigcos^2 x-7\trigsin^2 x}=\frac{\trigtg 2x}{\sqrt2}.}
+\end{TrigExercise}
+\begin{TrigExercise}{238}{Решить уравнение}{2}{2014}
+\TrigMath{\frac{\trigcos x\trigcos\left(x+\frac\pi6\right)}{6\trigcos^2 x+4\trigsin^2 x-5}+\frac{\trigcos x\trigsin\left(x+\frac\pi3\right)}{5-4\trigcos^2 x-6\trigsin^2 x}=\frac{-\sqrt3\trigtg 2x}{2}.}
+\end{TrigExercise}
+\begin{TrigExercise}{239}{Решить уравнение}{3}{2014}
+\TrigMath{\frac{\trigcos x\trigcos\left(x-\frac\pi4\right)}{9\trigcos^2 x+7\trigsin^2 x-8}-\frac{\trigcos x\trigsin\left(x-\frac\pi4\right)}{8-7\trigcos^2 x-9\trigsin^2 x}=\frac{\trigtg 2x}{\sqrt2}.}
+\end{TrigExercise}
+\begin{TrigExercise}{240}{Решить уравнение}{4}{2014}
+\TrigMath{\frac{\trigcos x\trigcos\left(x+\frac{5\pi}6\right)}{8\trigcos^2 x+6\trigsin^2 x-7}-\frac{\trigcos x\trigsin\left(x+\frac{2\pi}3\right)}{7-6\trigcos^2 x-8\trigsin^2 x}=\frac{\sqrt3\trigtg 2x}{2}.}
+\end{TrigExercise}
+\begin{TrigExercise}{241}{Решить уравнение}{5}{2014}
+\TrigMath{\sqrt3\left(\frac{\trigsin x}{\trigsin x-\trigcos x}+\trigtg 2x\right)=\frac{\trigcos x}{\trigsin x+\trigcos x}.}
+\end{TrigExercise}
+\begin{TrigExercise}{242}{Решить уравнение}{6}{2014}
+\TrigMath{\frac{\trigcos x}{\trigsin x+\trigcos x}+\trigtg 2x=\frac{\sqrt3\trigsin x}{\trigsin x-\trigcos x}.}
+\end{TrigExercise}
+\begin{TrigExercise}{243}{Решить уравнение}{7}{2014}
+\TrigMath{\frac{\sqrt3\trigcos x}{\trigsin x+\trigcos x}=\trigtg 2x+\frac{\trigsin x}{\trigsin x-\trigcos x}.}
+\end{TrigExercise}
+\begin{TrigExercise}{244}{Решить уравнение}{8}{2014}
+\TrigMath{\frac{\trigsin x}{\trigsin x-\trigcos x}=\sqrt3\left(\frac{\trigcos x}{\trigsin x+\trigcos x}+\trigtg 2x\right).}
+\end{TrigExercise}
+\end{TrigSourcePage}
+
+\end{multicols}
+\end{document}
